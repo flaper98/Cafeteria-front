@@ -1,0 +1,101 @@
+.recetas-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+aside {
+  height: calc(100vh - 190px);
+}
+
+.producto-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #f4f1e8;
+  cursor: pointer;
+  text-align: left;
+}
+
+.producto-list-item:hover {
+  background: #faf8f2;
+}
+
+.producto-list-item-activo {
+  background: #eaf3ec;
+}
+
+.stat-mini {
+  background: #faf8f2;
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.75rem;
+}
+
+.stat-mini-label {
+  margin: 0;
+  font-size: 0.7rem;
+  color: #8a8375;
+}
+
+.stat-mini-value {
+  margin: 0.15rem 0 0;
+  font-weight: 700;
+  color: var(--brand-ink);
+}
+
+.rendimiento-input {
+  width: 100%;
+  border: 1px solid #e7e2d8;
+  border-radius: 0.4rem;
+  padding: 0.15rem 0.4rem;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+.insumos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+
+  th {
+    text-align: left;
+    color: #8a8375;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid #e7e2d8;
+  }
+
+  td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #f4f1e8;
+  }
+}
+
+.insumo-form {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+@media (max-width: 900px) {
+  .recetas-layout {
+    grid-template-columns: 1fr;
+  }
+
+  aside {
+    height: 16rem;
+  }
+
+  .insumo-form {
+    grid-template-columns: 1fr 1fr;
+  }
+}

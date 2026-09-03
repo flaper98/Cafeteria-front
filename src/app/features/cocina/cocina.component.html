@@ -1,0 +1,92 @@
+<app-page-header title="Cocina / KDS" subtitle="Pedidos pendientes, en preparación y listos, ordenados por estación.">
+</app-page-header>
+
+<div class="flex flex-wrap gap-2 mb-4">
+  <button
+    type="button"
+    class="filter-chip"
+    [class.filter-chip-active]="estacionActiva() === 'todas'"
+    (click)="estacionActiva.set('todas')"
+  >
+    Todas las estaciones
+  </button>
+  @for (est of estaciones; track est.value) {
+    <button
+      type="button"
+      class="filter-chip"
+      [class.filter-chip-active]="estacionActiva() === est.value"
+      (click)="estacionActiva.set(est.value)"
+    >
+      {{ est.label }}
+    </button>
+  }
+</div>
+
+<div class="kds-board">
+  <section class="kds-column kds-pendiente">
+    <h3>Pendiente <span class="kds-count">{{ pendientes().length }}</span></h3>
+    <div class="kds-cards app-scroll">
+      @if (pendientes().length === 0) {
+        <app-empty-state icon="check_circle" title="Sin pendientes" message=""></app-empty-state>
+      }
+      @for (t of pendientes(); track t.item.id) {
+        <div class="kds-card">
+          <div class="flex justify-between items-start">
+            <p class="kds-ref">{{ referenciaPedido(t.pedido) }}</p>
+            <span class="kds-tiempo">{{ tiempoEspera(t.pedido) }}</span>
+          </div>
+          <p class="kds-item">{{ t.item.cantidad }}× {{ t.item.nombreProducto }}</p>
+          @if (t.item.observacion) {
+            <p class="kds-obs">{{ t.item.observacion }}</p>
+          }
+          <button mat-flat-button color="primary" class="w-full !mt-2" (click)="avanzar(t.pedido, t.item, 'en-preparacion')">
+            Empezar
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="kds-column kds-preparacion">
+    <h3>En preparación <span class="kds-count">{{ enPreparacion().length }}</span></h3>
+    <div class="kds-cards app-scroll">
+      @if (enPreparacion().length === 0) {
+        <app-empty-state icon="skillet" title="Nada en preparación" message=""></app-empty-state>
+      }
+      @for (t of enPreparacion(); track t.item.id) {
+        <div class="kds-card">
+          <div class="flex justify-between items-start">
+            <p class="kds-ref">{{ referenciaPedido(t.pedido) }}</p>
+            <span class="kds-tiempo">{{ tiempoEspera(t.pedido) }}</span>
+          </div>
+          <p class="kds-item">{{ t.item.cantidad }}× {{ t.item.nombreProducto }}</p>
+          @if (t.item.observacion) {
+            <p class="kds-obs">{{ t.item.observacion }}</p>
+          }
+          <button mat-flat-button color="primary" class="w-full !mt-2" (click)="avanzar(t.pedido, t.item, 'listo')">
+            Marcar listo
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section class="kds-column kds-listo">
+    <h3>Listo <span class="kds-count">{{ listos().length }}</span></h3>
+    <div class="kds-cards app-scroll">
+      @if (listos().length === 0) {
+        <app-empty-state icon="hourglass_empty" title="Nada listo aún" message=""></app-empty-state>
+      }
+      @for (t of listos(); track t.item.id) {
+        <div class="kds-card kds-card-listo">
+          <div class="flex justify-between items-start">
+            <p class="kds-ref">{{ referenciaPedido(t.pedido) }}</p>
+            <span class="kds-tiempo">{{ tiempoEspera(t.pedido) }}</span>
+          </div>
+          <p class="kds-item">{{ t.item.cantidad }}× {{ t.item.nombreProducto }}</p>
+          <p class="kds-obs text-emerald-600">Esperando al mozo</p>
+        </div>
+      }
+    </div>
+  </section>
+</div>

@@ -1,0 +1,145 @@
+<app-page-header title="Punto de Venta" subtitle="Registra ventas de salón, para llevar y delivery."></app-page-header>
+
+<div class="pos-layout">
+  <section class="pos-products app-scroll">
+    <div class="flex flex-wrap gap-2 mb-3">
+      @for (cat of categorias(); track cat.id) {
+        <button
+          type="button"
+          class="filter-chip"
+          [class.filter-chip-active]="categoriaActiva() === cat.id"
+          (click)="seleccionarCategoria(cat.id)"
+        >
+          {{ cat.nombre }}
+        </button>
+      }
+      <button
+        type="button"
+        class="filter-chip"
+        [class.filter-chip-active]="categoriaActiva() === 'todas'"
+        (click)="seleccionarCategoria('todas')"
+      >
+        Todas
+      </button>
+    </div>
+
+    @if (productosFiltrados().length === 0) {
+      <app-empty-state icon="restaurant_menu" title="Sin productos disponibles en esta categoría"></app-empty-state>
+    } @else {
+      <div class="producto-grid">
+        @for (producto of productosFiltrados(); track producto.id) {
+          <button type="button" class="producto-card" (click)="agregarProducto(producto)">
+            <span class="text-3xl">{{ producto.imagenEmoji }}</span>
+            <p class="producto-nombre">{{ producto.nombre }}</p>
+            <p class="producto-precio">S/ {{ producto.precio.toFixed(2) }}</p>
+          </button>
+        }
+      </div>
+    }
+  </section>
+
+  <aside class="pos-cart">
+    <div class="pos-cart-header">
+      <mat-button-toggle-group [value]="canal()" (change)="cambiarCanal($event.value)" class="w-full">
+        <mat-button-toggle value="salon" class="flex-1">Salón</mat-button-toggle>
+        <mat-button-toggle value="para-llevar" class="flex-1">Para llevar</mat-button-toggle>
+        <mat-button-toggle value="delivery" class="flex-1">Delivery</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      @if (canal() === 'salon') {
+        <mat-form-field appearance="outline" class="w-full !mt-3 !mb-[-1.25rem]">
+          <mat-label>Mesa</mat-label>
+          <mat-select [value]="mesaSeleccionadaId()" (selectionChange)="seleccionarMesa($event.value)">
+            <mat-option [value]="null">Sin asignar</mat-option>
+            @for (mesa of mesasDisponibles(); track mesa.id) {
+              <mat-option [value]="mesa.id">
+                Mesa {{ mesa.numero }} · {{ mesa.zona }}
+                {{ mesa.estado === 'libre' ? '' : '(' + mesa.estado + ')' }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+    </div>
+
+    <div class="pos-cart-body app-scroll">
+      @if (pedidoExistente(); as p) {
+        <p class="cart-section-title">Ya enviado · {{ p.numero }}</p>
+        <ul class="cart-list">
+          @for (it of p.items; track it.id) {
+            <li class="cart-line">
+              <span>{{ it.cantidad }}× {{ it.nombreProducto }}</span>
+              <span class="text-stone-500">S/ {{ (it.cantidad * it.precioUnitario).toFixed(2) }}</span>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (carritoNuevo().length > 0) {
+        <p class="cart-section-title">{{ pedidoExistente() ? 'Por enviar' : 'Pedido nuevo' }}</p>
+        <ul class="cart-list">
+          @for (linea of carritoNuevo(); track linea.producto.id; let i = $index) {
+            <li class="cart-line-editable">
+              <div>
+                <p class="m-0 font-medium text-sm">{{ linea.producto.nombre }}</p>
+                <p class="m-0 text-xs text-stone-500">S/ {{ linea.producto.precio.toFixed(2) }} c/u</p>
+              </div>
+              <div class="flex items-center gap-1">
+                <button mat-icon-button (click)="cambiarCantidad(i, -1)">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <span class="w-5 text-center">{{ linea.cantidad }}</span>
+                <button mat-icon-button (click)="cambiarCantidad(i, 1)">
+                  <mat-icon>add</mat-icon>
+                </button>
+                <button mat-icon-button (click)="quitarLinea(i)">
+                  <mat-icon class="!text-base opacity-60">close</mat-icon>
+                </button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (!pedidoExistente() && carritoNuevo().length === 0) {
+        <app-empty-state
+          icon="shopping_cart"
+          title="Carrito vacío"
+          message="Toca un producto para agregarlo al pedido."
+        ></app-empty-state>
+      }
+    </div>
+
+    <div class="pos-cart-footer">
+      <div class="flex justify-between text-sm text-stone-500">
+        <span>Subtotal</span>
+        <span>S/ {{ (totalExistente() + totalNuevo()).toFixed(2) }}</span>
+      </div>
+      <div class="flex justify-between items-center text-sm text-stone-500 my-1">
+        <span>Descuento (S/)</span>
+        <input
+          type="number"
+          min="0"
+          class="descuento-input"
+          [value]="descuento()"
+          (input)="descuento.set(+$any($event.target).value || 0)"
+        />
+      </div>
+      <div class="flex justify-between text-lg font-semibold mt-2">
+        <span>Total</span>
+        <span>S/ {{ totalGeneral().toFixed(2) }}</span>
+      </div>
+
+      <div class="flex gap-2 mt-3">
+        <button mat-stroked-button class="flex-1 !h-11" [disabled]="!hayAlgoQueEnviar()" (click)="enviarACocina()">
+          <mat-icon>soup_kitchen</mat-icon>
+          Enviar a cocina
+        </button>
+        <button mat-flat-button color="primary" class="flex-1 !h-11" [disabled]="!hayAlgoQueCobrar()" (click)="cobrar()">
+          <mat-icon>payments</mat-icon>
+          Cobrar
+        </button>
+      </div>
+    </div>
+  </aside>
+</div>

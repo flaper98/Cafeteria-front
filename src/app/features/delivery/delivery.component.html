@@ -1,0 +1,68 @@
+<app-page-header title="Delivery" subtitle="Pedidos para reparto: dirección, costo de envío, estado y repartidor.">
+  <button mat-flat-button color="primary" (click)="nuevoPedido()">
+    <mat-icon>add</mat-icon>
+    Nuevo pedido
+  </button>
+</app-page-header>
+
+<div class="flex gap-2 mb-4">
+  <button type="button" class="filter-chip" [class.filter-chip-active]="soloEnCurso()" (click)="soloEnCurso.set(true)">
+    En curso
+  </button>
+  <button type="button" class="filter-chip" [class.filter-chip-active]="!soloEnCurso()" (click)="soloEnCurso.set(false)">
+    Todos
+  </button>
+</div>
+
+@if (pedidos().length === 0) {
+  <app-empty-state icon="delivery_dining" title="No hay pedidos de delivery" message="Crea uno nuevo cuando llegue un pedido por reparto."></app-empty-state>
+} @else {
+  <div class="pedidos-grid">
+    @for (p of pedidos(); track p.id) {
+      <div class="card-surface p-4 flex flex-col gap-2">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="font-semibold m-0">{{ p.clienteNombre }}</p>
+            <p class="text-xs text-stone-500 m-0">{{ p.telefono }}</p>
+          </div>
+          <app-status-chip [label]="estadoInfo(p).label" [tone]="estadoInfo(p).tone"></app-status-chip>
+        </div>
+
+        <div class="flex items-start gap-2 text-sm text-stone-600">
+          <mat-icon class="!text-base opacity-50 mt-0.5">location_on</mat-icon>
+          <div>
+            <p class="m-0">{{ p.direccion }}</p>
+            @if (p.referencia) {
+              <p class="m-0 text-xs text-stone-400">{{ p.referencia }}</p>
+            }
+          </div>
+        </div>
+
+        <div class="flex justify-between text-sm pt-2 border-t border-stone-100">
+          <span class="text-stone-500">Envío S/ {{ p.costoEnvio.toFixed(2) }}</span>
+          <span class="font-semibold">Total S/ {{ p.total.toFixed(2) }}</span>
+        </div>
+
+        @if (p.repartidor) {
+          <p class="text-xs text-stone-500 m-0">
+            <mat-icon class="!text-sm align-middle mr-1">sports_motorsports</mat-icon>{{ p.repartidor }}
+          </p>
+        }
+
+        <div class="flex flex-wrap gap-1 mt-1">
+          @if (p.estado === 'pendiente') {
+            @for (r of repartidores; track r) {
+              <button type="button" class="filter-chip" (click)="asignarRepartidor(p, r)">{{ r }}</button>
+            }
+          }
+          @if (p.estado === 'en-camino') {
+            <button mat-stroked-button (click)="cambiarEstado(p, 'entregado')">Marcar entregado</button>
+          }
+          @if (p.estado === 'pendiente' || p.estado === 'en-camino') {
+            <button mat-button (click)="cambiarEstado(p, 'cancelado')">Cancelar</button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

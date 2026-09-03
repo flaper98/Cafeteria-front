@@ -1,0 +1,73 @@
+<div class="login-page">
+  <section class="brand-panel">
+    <div class="brand-mark">TL</div>
+    <h1>Tirol Lácteos</h1>
+    <p class="subtitle">Sistema de gestión para cafetería y lácteos</p>
+    <ul class="feature-list">
+      <li><mat-icon>point_of_sale</mat-icon> Ventas, mesas y comandas en un solo lugar</li>
+      <li><mat-icon>soup_kitchen</mat-icon> Cocina conectada en tiempo real</li>
+      <li><mat-icon>inventory_2</mat-icon> Control de inventario y costos</li>
+      <li><mat-icon>bar_chart</mat-icon> Reportes al instante, desde cualquier lugar</li>
+    </ul>
+  </section>
+
+  <section class="form-panel">
+    <div class="form-card">
+      <h2>Iniciar sesión</h2>
+      <p class="form-subtitle">Ingresa tus credenciales para continuar</p>
+
+      <form [formGroup]="form" (ngSubmit)="ingresar()" class="flex flex-col gap-1">
+        <mat-form-field appearance="outline">
+          <mat-label>Usuario</mat-label>
+          <input matInput formControlName="usuario" autocomplete="username" />
+          <mat-icon matPrefix class="mr-2 opacity-60">person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Contraseña</mat-label>
+          <input
+            matInput
+            [type]="ocultarPassword() ? 'password' : 'text'"
+            formControlName="password"
+            autocomplete="current-password"
+          />
+          <mat-icon matPrefix class="mr-2 opacity-60">lock</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="ocultarPassword.set(!ocultarPassword())"
+          >
+            <mat-icon>{{ ocultarPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        @if (error()) {
+          <p class="error-text">{{ error() }}</p>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="!h-11 !rounded-lg mt-2"
+          [disabled]="cargando()"
+        >
+          {{ cargando() ? 'Ingresando…' : 'Ingresar' }}
+        </button>
+      </form>
+
+      <div class="demo-block">
+        <p class="demo-title">Accesos de demostración (contraseña: 1234)</p>
+        <div class="demo-grid">
+          @for (acceso of accesosDemo; track acceso.usuario) {
+            <button type="button" class="demo-chip" (click)="usarAcceso(acceso.usuario)">
+              <mat-icon>{{ acceso.icon }}</mat-icon>
+              <span>{{ acceso.rol }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,102 @@
+<app-page-header title="Inventario" subtitle="Entradas y salidas de insumos, stock mínimo, kardex y alertas de reposición.">
+  <button mat-flat-button color="primary" (click)="nuevoItem()">
+    <mat-icon>add</mat-icon>
+    Nuevo insumo
+  </button>
+</app-page-header>
+
+<div class="grid grid-cols-2 gap-3 mb-4 max-w-md">
+  <div class="card-surface p-3">
+    <p class="text-xs text-stone-500 m-0">Insumos registrados</p>
+    <p class="text-xl font-semibold m-0">{{ inventarioService.items().length }}</p>
+  </div>
+  <div class="card-surface p-3" [class.border-amber-300]="bajoMinimo().length > 0">
+    <p class="text-xs text-stone-500 m-0">Bajo stock mínimo</p>
+    <p class="text-xl font-semibold m-0" [class.text-amber-600]="bajoMinimo().length > 0">{{ bajoMinimo().length }}</p>
+  </div>
+</div>
+
+<div class="flex gap-2 mb-4">
+  <button type="button" class="filter-chip" [class.filter-chip-active]="!soloBajoMinimo()" (click)="soloBajoMinimo.set(false)">
+    Todos
+  </button>
+  <button type="button" class="filter-chip" [class.filter-chip-active]="soloBajoMinimo()" (click)="soloBajoMinimo.set(true)">
+    Bajo mínimo
+  </button>
+</div>
+
+<div class="card-surface overflow-hidden mb-6">
+  <div class="overflow-x-auto">
+    <table mat-table [dataSource]="items()" class="w-full">
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Insumo</th>
+        <td mat-cell *matCellDef="let i">
+          <p class="m-0 font-medium">{{ i.nombre }}</p>
+          <p class="m-0 text-xs text-stone-500">{{ i.categoria }}</p>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef>Stock</th>
+        <td mat-cell *matCellDef="let i" class="min-w-[180px]">
+          <div class="flex items-center justify-between text-sm mb-1">
+            <span [class.text-amber-600]="i.stockActual < i.stockMinimo" [class.font-semibold]="i.stockActual < i.stockMinimo">
+              {{ i.stockActual }} {{ i.unidad }}
+            </span>
+            <span class="text-stone-400 text-xs">mín. {{ i.stockMinimo }}</span>
+          </div>
+          <div class="stock-bar">
+            <div
+              class="stock-bar-fill"
+              [class.stock-bar-alerta]="i.stockActual < i.stockMinimo"
+              [style.width.%]="porcentaje(i)"
+            ></div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="costo">
+        <th mat-header-cell *matHeaderCellDef>Costo unitario</th>
+        <td mat-cell *matCellDef="let i">S/ {{ i.costoUnitario.toFixed(2) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef class="text-right">Acciones</th>
+        <td mat-cell *matCellDef="let i" class="text-right">
+          <button mat-icon-button matTooltip="Registrar movimiento" (click)="registrarMovimiento(i)">
+            <mat-icon>swap_vert</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Editar" (click)="editarItem(i)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Eliminar" (click)="eliminarItem(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas"></tr>
+    </table>
+  </div>
+</div>
+
+<p class="text-sm font-medium text-stone-600 mb-2">Kardex · últimos movimientos</p>
+<div class="card-surface overflow-hidden">
+  <div class="divide-y divide-stone-100">
+    @for (m of movimientos(); track m.id) {
+      <div class="flex items-center justify-between px-4 py-2.5 text-sm">
+        <div class="flex items-center gap-3">
+          <mat-icon class="opacity-50">
+            {{ m.tipo === 'entrada' ? 'call_received' : m.tipo === 'salida' ? 'call_made' : m.tipo === 'merma' ? 'delete_sweep' : 'tune' }}
+          </mat-icon>
+          <div>
+            <p class="m-0">{{ m.itemNombre }} <span class="text-stone-400">· {{ m.motivo }}</span></p>
+            <p class="m-0 text-xs text-stone-400">{{ m.fecha | date: 'dd/MM HH:mm' }}</p>
+          </div>
+        </div>
+        <p class="m-0 font-medium">{{ m.tipo === 'entrada' ? '+' : '-' }}{{ m.cantidad }}</p>
+      </div>
+    }
+  </div>
+</div>

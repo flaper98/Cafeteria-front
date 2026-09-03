@@ -1,0 +1,146 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.sidenav {
+  background: var(--brand-forest-dark);
+  color: #f4f1e8;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 1rem;
+}
+
+.brand-mark {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: var(--brand-caramel);
+  color: #241c12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.brand-name {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.brand-tag {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #cfe0d4;
+}
+
+.nav-scroll {
+  flex: 1;
+  padding: 0.25rem 0.75rem 1.5rem;
+}
+
+.nav-section-title {
+  margin: 1.1rem 0.75rem 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9fc2ac;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.6rem;
+  color: #e7f0e9;
+  text-decoration: none;
+  font-size: 0.88rem;
+  margin-bottom: 0.15rem;
+  transition: background-color 0.15s ease;
+
+  mat-icon {
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    opacity: 0.85;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+.nav-link-active {
+  background: var(--brand-caramel);
+  color: #241c12;
+  font-weight: 600;
+
+  mat-icon {
+    opacity: 1;
+  }
+
+  &:hover {
+    background: var(--brand-caramel);
+  }
+}
+
+.content-area {
+  background: var(--brand-cream);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-toolbar {
+  background: #fff !important;
+  border-bottom: 1px solid #e7e2d8;
+  color: var(--brand-ink);
+  gap: 0.5rem;
+}
+
+.toolbar-fecha {
+  font-size: 0.82rem;
+  color: #78716c;
+  text-transform: capitalize;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: var(--brand-leaf);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.page-area {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .page-area {
+    padding: 1rem;
+  }
+}

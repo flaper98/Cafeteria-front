@@ -1,0 +1,132 @@
+<app-page-header title="Dashboard y Reportes" subtitle="Ventas, cocina, caja e inventario, actualizados al instante.">
+</app-page-header>
+
+<div class="kpi-grid">
+  <app-stat-card
+    label="Ventas de hoy"
+    [value]="'S/ ' + ventasHoy().toFixed(2)"
+    [hint]="(variacionVsAyer() >= 0 ? '+' : '') + variacionVsAyer().toFixed(0) + '% vs ayer'"
+    icon="payments"
+  ></app-stat-card>
+  <app-stat-card
+    label="Ticket promedio"
+    [value]="'S/ ' + ticketPromedioHoy().toFixed(2)"
+    hint="Hoy"
+    icon="receipt_long"
+    iconColor="#2563eb"
+    iconBg="#e8f0fe"
+  ></app-stat-card>
+  <app-stat-card
+    label="Mesas ocupadas"
+    [value]="mesasOcupadas() + ' / ' + totalMesas()"
+    hint="En este momento"
+    icon="table_restaurant"
+    iconColor="#d97706"
+    iconBg="#fef3e2"
+  ></app-stat-card>
+  <app-stat-card
+    label="Pedidos en cocina"
+    [value]="pedidosEnCocina()"
+    hint="Activos ahora"
+    icon="soup_kitchen"
+    iconColor="#dc2626"
+    iconBg="#fde8e8"
+  ></app-stat-card>
+  <app-stat-card
+    label="Insumos bajo mínimo"
+    [value]="insumosBajoMinimo().length"
+    hint="Requieren reposición"
+    icon="inventory_2"
+    iconColor="#a3661f"
+    iconBg="#f7ecdd"
+  ></app-stat-card>
+</div>
+
+<div class="charts-grid">
+  <div class="card-surface p-4">
+    <p class="chart-title">Ventas · últimos 7 días</p>
+    <div class="chart-box">
+      <canvas baseChart [type]="'line'" [data]="ventas7DiasData()" [options]="lineOptions"></canvas>
+    </div>
+  </div>
+
+  <div class="card-surface p-4">
+    <p class="chart-title">Ventas por categoría · 7 días</p>
+    @if (ventasPorCategoriaData().labels?.length) {
+      <div class="chart-box">
+        <canvas baseChart [type]="'bar'" [data]="ventasPorCategoriaData()" [options]="barOptionsHorizontal"></canvas>
+      </div>
+    } @else {
+      <app-empty-state icon="bar_chart" title="Sin ventas en este periodo" message=""></app-empty-state>
+    }
+  </div>
+
+  <div class="card-surface p-4">
+    <p class="chart-title">Ventas por medio de pago · 7 días</p>
+    @if (ventasPorMedioPagoData().labels?.length) {
+      <div class="chart-box">
+        <canvas baseChart [type]="'bar'" [data]="ventasPorMedioPagoData()" [options]="barOptionsHorizontal"></canvas>
+      </div>
+    } @else {
+      <app-empty-state icon="payments" title="Sin cobros en este periodo" message=""></app-empty-state>
+    }
+  </div>
+
+  <div class="card-surface p-4">
+    <p class="chart-title">Platos más vendidos · 7 días</p>
+    @if (topPlatosData().labels?.length) {
+      <div class="chart-box">
+        <canvas baseChart [type]="'bar'" [data]="topPlatosData()" [options]="topPlatosOptions"></canvas>
+      </div>
+    } @else {
+      <app-empty-state icon="restaurant_menu" title="Sin datos de ventas" message=""></app-empty-state>
+    }
+  </div>
+</div>
+
+<div class="alerts-grid">
+  <div class="card-surface p-4">
+    <p class="chart-title">Insumos por reponer</p>
+    @if (insumosBajoMinimo().length === 0) {
+      <p class="text-sm text-stone-400 py-4 text-center">Todo el inventario está por encima del mínimo.</p>
+    } @else {
+      <ul class="alert-list">
+        @for (i of insumosBajoMinimo(); track i.id) {
+          <li>
+            <span>{{ i.nombre }}</span>
+            <span class="status-chip tone-warn">{{ i.stockActual }} / {{ i.stockMinimo }} {{ i.unidad }}</span>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div class="card-surface p-4">
+    <p class="chart-title">Mesas por cobrar</p>
+    @if (mesasPorCobrar().length === 0) {
+      <p class="text-sm text-stone-400 py-4 text-center">No hay mesas pendientes de cobro.</p>
+    } @else {
+      <ul class="alert-list">
+        @for (m of mesasPorCobrar(); track m.id) {
+          <li>
+            <span>Mesa {{ m.numero }} · {{ m.zona }}</span>
+            <span class="status-chip tone-info">Por cobrar</span>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+
+  <div class="card-surface p-4">
+    <p class="chart-title">Estado de caja</p>
+    @if (turnoAbierto(); as t) {
+      <div class="flex items-center gap-2 py-2">
+        <span class="status-chip tone-success">Turno abierto</span>
+        <span class="text-sm text-stone-500">{{ t.cajeroNombre }}</span>
+      </div>
+      <p class="text-xs text-stone-400 m-0">Apertura: S/ {{ t.montoApertura.toFixed(2) }}</p>
+    } @else {
+      <p class="text-sm text-stone-400 py-4 text-center">No hay un turno de caja abierto.</p>
+    }
+  </div>
+</div>

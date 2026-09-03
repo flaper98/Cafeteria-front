@@ -1,0 +1,82 @@
+<app-page-header title="Compras y Proveedores" subtitle="Proveedores, órdenes de compra y recepción de mercadería.">
+</app-page-header>
+
+<mat-tab-group animationDuration="150ms">
+  <mat-tab label="Proveedores">
+    <div class="pt-4 flex justify-end">
+      <button mat-flat-button color="primary" (click)="nuevoProveedor()">
+        <mat-icon>add_business</mat-icon>
+        Nuevo proveedor
+      </button>
+    </div>
+
+    @if (proveedores().length === 0) {
+      <app-empty-state icon="local_shipping" title="Sin proveedores registrados"></app-empty-state>
+    } @else {
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+        @for (p of proveedores(); track p.id) {
+          <div class="card-surface p-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-semibold m-0">{{ p.nombre }}</p>
+                <p class="text-xs text-stone-500 m-0">{{ p.contacto }} · {{ p.telefono }}</p>
+              </div>
+              <div>
+                <button mat-icon-button matTooltip="Editar" (click)="editarProveedor(p)">
+                  <mat-icon class="!text-base">edit</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Eliminar" (click)="eliminarProveedor(p)">
+                  <mat-icon class="!text-base">delete</mat-icon>
+                </button>
+              </div>
+            </div>
+            <p class="text-sm text-stone-600 mt-2 mb-0">{{ p.productos }}</p>
+            @if (p.ruc) {
+              <p class="text-xs text-stone-400 mt-1 mb-0">RUC {{ p.ruc }}</p>
+            }
+          </div>
+        }
+      </div>
+    }
+  </mat-tab>
+
+  <mat-tab label="Órdenes de compra">
+    <div class="pt-4 flex justify-end">
+      <button mat-flat-button color="primary" (click)="nuevaOrden()" [disabled]="proveedores().length === 0">
+        <mat-icon>add_shopping_cart</mat-icon>
+        Nueva orden
+      </button>
+    </div>
+
+    @if (ordenes().length === 0) {
+      <app-empty-state icon="shopping_cart" title="Sin órdenes de compra"></app-empty-state>
+    } @else {
+      <div class="card-surface overflow-hidden mt-3">
+        <div class="divide-y divide-stone-100">
+          @for (o of ordenes(); track o.id) {
+            <div class="px-4 py-3">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="m-0 font-medium">{{ o.numero }} · {{ o.proveedorNombre }}</p>
+                  <p class="m-0 text-xs text-stone-400">{{ o.fecha | date: 'dd/MM/yyyy' }} · {{ o.items.length }} ítems</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <p class="m-0 font-semibold">S/ {{ total(o).toFixed(2) }}</p>
+                  <app-status-chip [label]="estadoInfo(o).label" [tone]="estadoInfo(o).tone"></app-status-chip>
+                  @if (o.estado === 'pendiente') {
+                    <button mat-icon-button matTooltip="Marcar recibida" (click)="marcarRecibida(o)">
+                      <mat-icon class="!text-lg text-emerald-500">inventory</mat-icon>
+                    </button>
+                    <button mat-icon-button matTooltip="Anular" (click)="anularOrden(o)">
+                      <mat-icon class="!text-lg opacity-60">cancel</mat-icon>
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </mat-tab>
+</mat-tab-group>

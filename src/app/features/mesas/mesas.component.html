@@ -1,0 +1,68 @@
+<app-page-header title="Gestión de Mesas" subtitle="Mapa visual del salón: libre, ocupada, por cobrar o reservada.">
+  <button mat-flat-button color="primary" (click)="nuevaMesa()">
+    <mat-icon>add</mat-icon>
+    Nueva mesa
+  </button>
+</app-page-header>
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+  <div class="card-surface p-3 text-center">
+    <p class="text-2xl font-semibold text-emerald-600 m-0">{{ resumen().libres }}</p>
+    <p class="text-xs text-stone-500 m-0">Libres</p>
+  </div>
+  <div class="card-surface p-3 text-center">
+    <p class="text-2xl font-semibold text-amber-600 m-0">{{ resumen().ocupadas }}</p>
+    <p class="text-xs text-stone-500 m-0">Ocupadas</p>
+  </div>
+  <div class="card-surface p-3 text-center">
+    <p class="text-2xl font-semibold text-blue-600 m-0">{{ resumen().porCobrar }}</p>
+    <p class="text-xs text-stone-500 m-0">Por cobrar</p>
+  </div>
+  <div class="card-surface p-3 text-center">
+    <p class="text-2xl font-semibold text-[var(--brand-forest)] m-0">{{ resumen().reservadas }}</p>
+    <p class="text-xs text-stone-500 m-0">Reservadas</p>
+  </div>
+</div>
+
+<div class="flex flex-wrap gap-2 mb-4">
+  <button
+    type="button"
+    class="filter-chip"
+    [class.filter-chip-active]="zonaSeleccionada() === 'todas'"
+    (click)="zonaSeleccionada.set('todas')"
+  >
+    Todas las zonas
+  </button>
+  @for (zona of zonas(); track zona) {
+    <button
+      type="button"
+      class="filter-chip"
+      [class.filter-chip-active]="zonaSeleccionada() === zona"
+      (click)="zonaSeleccionada.set(zona)"
+    >
+      {{ zona }}
+    </button>
+  }
+</div>
+
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+  @for (mesa of mesasFiltradas(); track mesa.id) {
+    <button
+      type="button"
+      class="mesa-card"
+      [class]="'mesa-' + mesa.estado"
+      (click)="abrirDetalle(mesa)"
+      [matTooltip]="mesa.mozoNombre ? 'Atendida por ' + mesa.mozoNombre : ''"
+    >
+      <div class="flex items-center justify-between">
+        <span class="mesa-numero">{{ mesa.numero }}</span>
+        <mat-icon class="!text-base opacity-60">table_restaurant</mat-icon>
+      </div>
+      <app-status-chip [label]="estadoInfo(mesa).label" [tone]="estadoInfo(mesa).tone"></app-status-chip>
+      <p class="text-xs text-stone-500 m-0 mt-1">{{ mesa.capacidad }} personas</p>
+      @if (mesa.estado === 'ocupada' || mesa.estado === 'por-cobrar') {
+        <p class="text-xs text-stone-400 m-0">{{ tiempoOcupada(mesa) }}</p>
+      }
+    </button>
+  }
+</div>

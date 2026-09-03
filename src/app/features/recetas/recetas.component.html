@@ -1,0 +1,136 @@
+<app-page-header title="Recetas y Costos" subtitle="Define los insumos de cada plato y calcula su costo real y margen.">
+</app-page-header>
+
+<div class="recetas-layout">
+  <aside class="card-surface overflow-hidden flex flex-col">
+    <div class="p-3 border-b border-stone-100">
+      <mat-form-field appearance="outline" class="w-full !mb-[-1.25rem]">
+        <mat-label>Buscar producto</mat-label>
+        <input matInput (input)="busqueda.set($any($event.target).value)" />
+        <mat-icon matPrefix class="opacity-50 mr-2">search</mat-icon>
+      </mat-form-field>
+    </div>
+    <div class="app-scroll flex-1">
+      @for (p of productosFiltrados(); track p.id) {
+        <button
+          type="button"
+          class="producto-list-item"
+          [class.producto-list-item-activo]="productoSeleccionadoId() === p.id"
+          (click)="seleccionarProducto(p)"
+        >
+          <span class="text-xl">{{ p.imagenEmoji }}</span>
+          <span class="flex-1 text-left">
+            <p class="m-0 text-sm font-medium">{{ p.nombre }}</p>
+            <p class="m-0 text-xs text-stone-400">S/ {{ p.precio.toFixed(2) }}</p>
+          </span>
+          @if (tieneReceta(p.id)) {
+            <mat-icon class="!text-base text-emerald-500">receipt_long</mat-icon>
+          }
+        </button>
+      }
+    </div>
+  </aside>
+
+  <section class="card-surface p-5">
+    @if (!productoSeleccionado()) {
+      <app-empty-state icon="receipt" title="Selecciona un producto" message="Elige un producto de la lista para ver o crear su receta."></app-empty-state>
+    } @else {
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-3xl">{{ productoSeleccionado()!.imagenEmoji }}</span>
+        <div>
+          <h2 class="text-lg font-semibold m-0">{{ productoSeleccionado()!.nombre }}</h2>
+          <p class="text-sm text-stone-500 m-0">Precio de venta: S/ {{ productoSeleccionado()!.precio.toFixed(2) }}</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        <div class="stat-mini">
+          <p class="stat-mini-label">Costo por porción</p>
+          <p class="stat-mini-value">S/ {{ costoPorPorcion().toFixed(2) }}</p>
+        </div>
+        <div class="stat-mini">
+          <p class="stat-mini-label">Margen</p>
+          <p class="stat-mini-value">S/ {{ margenSoles().toFixed(2) }}</p>
+        </div>
+        <div class="stat-mini">
+          <p class="stat-mini-label">Margen %</p>
+          <p class="stat-mini-value" [class.text-amber-600]="margenPorcentaje() < 40">{{ margenPorcentaje().toFixed(0) }}%</p>
+        </div>
+        <div class="stat-mini">
+          <p class="stat-mini-label">Rendimiento</p>
+          <input
+            type="number"
+            min="1"
+            class="rendimiento-input"
+            [value]="rendimiento()"
+            (input)="rendimiento.set(+$any($event.target).value || 1)"
+          />
+        </div>
+      </div>
+
+      <table class="insumos-table">
+        <thead>
+          <tr>
+            <th>Insumo</th>
+            <th>Cantidad</th>
+            <th>Unidad</th>
+            <th>Costo unit.</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (i of insumos(); track i.id) {
+            <tr>
+              <td>{{ i.nombre }}</td>
+              <td>{{ i.cantidad }}</td>
+              <td>{{ i.unidad }}</td>
+              <td>S/ {{ i.costoUnitario.toFixed(3) }}</td>
+              <td>S/ {{ (i.cantidad * i.costoUnitario).toFixed(2) }}</td>
+              <td>
+                <button mat-icon-button (click)="quitarInsumo(i.id)">
+                  <mat-icon class="!text-base opacity-60">delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          }
+          @if (insumos().length === 0) {
+            <tr>
+              <td colspan="6" class="text-center text-stone-400 py-4">Aún no hay insumos agregados</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <form [formGroup]="formInsumo" (ngSubmit)="agregarInsumo()" class="insumo-form">
+        <mat-form-field appearance="outline" class="!mb-[-1.25rem]">
+          <mat-label>Insumo</mat-label>
+          <input matInput formControlName="nombre" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="!mb-[-1.25rem]">
+          <mat-label>Cantidad</mat-label>
+          <input matInput type="number" step="0.1" formControlName="cantidad" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="!mb-[-1.25rem]">
+          <mat-label>Unidad</mat-label>
+          <input matInput formControlName="unidad" />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="!mb-[-1.25rem]">
+          <mat-label>Costo unit. (S/)</mat-label>
+          <input matInput type="number" step="0.01" formControlName="costoUnitario" />
+        </mat-form-field>
+        <button mat-stroked-button type="submit" [disabled]="formInsumo.invalid">
+          <mat-icon>add</mat-icon>
+          Agregar
+        </button>
+      </form>
+
+      <div class="flex justify-end mt-4">
+        <button mat-flat-button color="primary" (click)="guardarReceta()">
+          <mat-icon>save</mat-icon>
+          Guardar receta
+        </button>
+      </div>
+    }
+  </section>
+</div>

@@ -1,0 +1,79 @@
+<app-page-header title="Pedidos y Comandas" subtitle="Seguimiento de comandas activas por mesa, para llevar y delivery.">
+</app-page-header>
+
+<div class="flex flex-wrap gap-2 mb-4">
+  @for (f of filtros; track f.value) {
+    <button
+      type="button"
+      class="filter-chip"
+      [class.filter-chip-active]="filtroActivo() === f.value"
+      (click)="filtroActivo.set(f.value)"
+    >
+      {{ f.label }}
+    </button>
+  }
+</div>
+
+@if (pedidosFiltrados().length === 0) {
+  <app-empty-state
+    icon="receipt_long"
+    title="No hay comandas con este filtro"
+    message="Las nuevas comandas creadas desde el Punto de Venta aparecerán aquí."
+  ></app-empty-state>
+} @else {
+  <div class="pedidos-grid">
+    @for (pedido of pedidosFiltrados(); track pedido.id) {
+      <div class="card-surface p-4 flex flex-col gap-3">
+        <div class="flex items-start justify-between">
+          <div>
+            <p class="font-semibold m-0">
+              {{ pedido.numero }}
+              @if (pedido.numeroMesa) {
+                <span class="text-stone-400 font-normal"> · Mesa {{ pedido.numeroMesa }}</span>
+              } @else {
+                <span class="text-stone-400 font-normal"> · {{ pedido.canal === 'delivery' ? 'Delivery' : 'Para llevar' }}</span>
+              }
+            </p>
+            <p class="text-xs text-stone-500 m-0">{{ pedido.mozoNombre }} · {{ tiempoTranscurrido(pedido) }}</p>
+          </div>
+          <app-status-chip [label]="estadoPedidoInfo(pedido).label" [tone]="estadoPedidoInfo(pedido).tone"></app-status-chip>
+        </div>
+
+        <ul class="pedido-items">
+          @for (item of pedido.items; track item.id) {
+            <li>
+              <div class="flex-1 min-w-0">
+                <p class="m-0 text-sm truncate">{{ item.cantidad }}× {{ item.nombreProducto }}</p>
+                @if (item.observacion) {
+                  <p class="m-0 text-xs text-stone-400 italic truncate">{{ item.observacion }}</p>
+                }
+              </div>
+              <app-status-chip [label]="estadoItemInfo(item.estado).label" [tone]="estadoItemInfo(item.estado).tone"></app-status-chip>
+              @if (item.estado === 'listo') {
+                <button mat-icon-button matTooltip="Marcar entregado" (click)="entregarItem(pedido, item.id)">
+                  <mat-icon class="!text-lg">task_alt</mat-icon>
+                </button>
+              }
+            </li>
+          }
+        </ul>
+
+        <div class="flex items-center justify-between pt-2 border-t border-stone-100">
+          <p class="font-semibold m-0">S/ {{ total(pedido).toFixed(2) }}</p>
+          <div class="flex gap-1">
+            @if (pedido.estado === 'servido') {
+              <button mat-stroked-button (click)="marcarPorCobrar(pedido)">Por cobrar</button>
+            }
+            <button mat-button (click)="irAlPos(pedido)">
+              <mat-icon>point_of_sale</mat-icon>
+              POS
+            </button>
+            <button mat-icon-button matTooltip="Anular pedido" (click)="anularPedido(pedido)">
+              <mat-icon class="!text-lg opacity-60">cancel</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+}

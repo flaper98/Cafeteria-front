@@ -1,0 +1,151 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.login-page {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  background: var(--brand-cream);
+}
+
+.brand-panel {
+  background: radial-gradient(circle at 20% 20%, var(--brand-leaf), var(--brand-forest-dark) 70%);
+  color: #f4f1e8;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.brand-mark {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: var(--brand-caramel);
+  color: #241c12;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.brand-panel h1 {
+  margin: 0;
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: #d8e6dc;
+  margin: 0 0 2rem;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 22rem;
+}
+
+.feature-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  color: #ecf3ee;
+}
+
+.form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 22rem;
+}
+
+.form-card h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  color: var(--brand-ink);
+}
+
+.form-subtitle {
+  color: #78716c;
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.error-text {
+  color: #b91c1c;
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+.demo-block {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed #d9d2c2;
+}
+
+.demo-title {
+  font-size: 0.78rem;
+  color: #8a8375;
+  margin: 0 0 0.6rem;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.demo-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid #e7e2d8;
+  background: #fff;
+  border-radius: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--brand-ink);
+  transition: border-color 0.15s ease;
+
+  mat-icon {
+    font-size: 1.1rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--brand-leaf);
+  }
+
+  &:hover {
+    border-color: var(--brand-leaf);
+  }
+}
+
+@media (max-width: 860px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-panel {
+    padding: 2rem;
+  }
+}

@@ -1,0 +1,67 @@
+<mat-sidenav-container class="h-screen">
+  <mat-sidenav
+    [mode]="modoSidenav()"
+    [opened]="sidenavAbierto()"
+    (closedStart)="sidenavAbierto.set(false)"
+    class="sidenav !w-72 !border-0"
+  >
+    <div class="brand-block">
+      <div class="brand-mark">TL</div>
+      <div>
+        <p class="brand-name">Tirol Lácteos</p>
+        <p class="brand-tag">Sistema de gestión</p>
+      </div>
+    </div>
+
+    <nav class="app-scroll nav-scroll">
+      @for (seccion of secciones(); track seccion.titulo) {
+        <p class="nav-section-title">{{ seccion.titulo }}</p>
+        @for (item of seccion.items; track item.path) {
+          <a
+            class="nav-link"
+            [routerLink]="item.path"
+            routerLinkActive="nav-link-active"
+            (click)="cerrarSiEsMovil()"
+          >
+            <mat-icon>{{ item.icon }}</mat-icon>
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      }
+    </nav>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content-area">
+    <mat-toolbar class="app-toolbar">
+      <button mat-icon-button (click)="alternarSidenav()" aria-label="Mostrar u ocultar menú">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="toolbar-fecha">{{ horaActual() }}</span>
+      <span class="flex-1"></span>
+
+      <button mat-button [matMenuTriggerFor]="menuUsuario" class="user-chip">
+        <span class="user-avatar">{{ usuario()?.nombres?.charAt(0) }}</span>
+        <span class="hidden sm:flex flex-col items-start leading-tight">
+          <span class="text-sm font-medium">{{ usuario()?.nombres }}</span>
+          <span class="text-xs text-stone-500">{{ rolLabel() }}</span>
+        </span>
+        <mat-icon>expand_more</mat-icon>
+      </button>
+      <mat-menu #menuUsuario="matMenu">
+        <div class="px-4 py-2">
+          <p class="text-sm font-medium m-0">{{ usuario()?.nombres }}</p>
+          <p class="text-xs text-stone-500 m-0">&#64;{{ usuario()?.usuario }} · {{ rolLabel() }}</p>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="cerrarSesion()">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar sesión</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <main class="app-scroll page-area">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
